@@ -2,6 +2,7 @@
 import { useState } from 'react'
 import searchPokemon from './api/pokemonTcgApi'
 import './App.css'
+import Navbar from "./components/Navbar"
 
 function App() {
   const [searchText, setSearchText] = useState('')
@@ -18,16 +19,9 @@ function App() {
   }
 
   return (
-    <main>
-      <input
-        value={searchText}
-        onChange={(event) => setSearchText(event.target.value)}
-        placeholder="Search Pokémon"
-      />
-      <button onClick={handleSearch}>Search</button>
-
-      {results && <pre>{JSON.stringify(results, null, 2)}</pre>}
-    </main>
+    <>
+    <Navbar/>
+    </>
   )
 }
 

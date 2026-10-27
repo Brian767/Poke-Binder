@@ -1,0 +1,25 @@
+:root {
+  --color-main: #373e40;
+  --color-dark-accent: #305252;
+  --color-accent: #aceca1;
+  --color-font: #f5edf0;
+  --color-light-font : #d1ccdc;
+}
+
+html body{
+  margin: 0;
+  padding: 0;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+body{
+  background-color: #373e40;
+}
+div,
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+  padding: 0;
+}
