@@ -1,28 +1,25 @@
-// App.jsx
-import { useState } from 'react'
-import searchPokemon from './api/pokemonTcgApi'
-import './App.css'
-import Navbar from "./components/Navbar"
+import { Route, Routes } from "react-router";
+import "./App.css";
+import Navbar from "./components/Navbar";
 
-function App() {
-  const [searchText, setSearchText] = useState('')
-  const [results, setResults] = useState(null)
-
-  async function handleSearch() {
-    try {
-      const data = await searchPokemon(searchText)
-      console.log('PokéWallet response:', data)
-      setResults(data)
-    } catch (error) {
-      console.error('Search failed:', error)
-    }
-  }
-
+function HomePage() {
   return (
-    <>
-    <Navbar/>
-    </>
-  )
+    <main>
+      <h1>Welcome to PokeBinder</h1>
+      <p>Discover Pokémon cards and build your collection.</p>
+    </main>
+  );
 }
 
-export default App
+function App() {
+  return (
+    <>
+      <Navbar />
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+      </Routes>
+    </>
+  );
+}
+
+export default App;
