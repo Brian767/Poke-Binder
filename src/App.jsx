@@ -1,19 +1,19 @@
-import { Route, Routes } from "react-router";
+import { Route, Routes, BrowserRouter } from "react-router";
 import "./App.css";
-import Navbar from "./components/Navbar";
-import Home from "./components/Home";
-import Cards from "./components/Cards";
-
+import Home from "./pages/Home";
+import Cards from "./pages/Cards";
+import Layout from "./components/Layout";
 
 function App() {
   return (
-    <>
-      <Navbar />
+    <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/cards" element={<Cards />} />
+        <Route path="/" element={<Layout />}>
+          <Route index element={<Home />} />
+          <Route path="cards" element={<Cards />} />
+        </Route>
       </Routes>
-    </>
+    </BrowserRouter>
   );
 }
 

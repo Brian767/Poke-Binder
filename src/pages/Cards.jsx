@@ -1,4 +1,4 @@
-import searchCards from "../api/pokemonTcgApi";
+import {getCards, getCard} from "../api/pokemonTcgApi";
 import { useState } from "react";
 
 export default function Cards() {
@@ -11,7 +11,7 @@ export default function Cards() {
     setError(null);
 
     try {
-      const cardData = await searchCards(inputValue);
+      const cardData = await {getCards}(inputValue);
       setCards(Array.isArray(cardData) ? cardData : []);
 
     } catch (error) {
