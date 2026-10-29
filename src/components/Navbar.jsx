@@ -5,7 +5,7 @@ export default function Navbar() {
   const [isOpen, setIsOpen] = React.useState(false);
 
   const toggleMenu = () => {
-    setIsOpen(!isOpen);
+    setIsOpen((open) => !open);
   };
 
   return (
@@ -27,37 +27,34 @@ export default function Navbar() {
           <span className="bar"></span>
         </button>
 
-        {isOpen && (
-          <ul id="navLinks" className={isOpen ? "open" : ""}>
+        <ul id="navLinks" className={isOpen ? "open" : ""}>
+          <li className="menu-close-item">
             <button
               type="button"
-              className={`hamburger ${isOpen ? "open" : ""}`}
-              onClick={toggleMenu}
-              aria-label={
-                isOpen ? "Close navigation menu" : "Open navigation menu"
-              }
-              aria-expanded={isOpen}
-              aria-controls="navLinks"
+              className="menu-close"
+              onClick={() => setIsOpen(false)}
+              aria-label="Close navigation menu"
             >
-              <span >X</span>
+              <span className="bar-close"></span>
+              <span className="bar-close"></span>
             </button>
-            <li>
-              <NavLink className="navLink " to="/">
-                Home
-              </NavLink>
-            </li>
-            <li>
-              <NavLink className="navLink" to="/binders">
-                Binders
-              </NavLink>
-            </li>
-            <li>
-              <NavLink className="navLink" to="/cards">
-                Cards
-              </NavLink>
-            </li>
-          </ul>
-        )}
+          </li>
+          <li>
+            <NavLink className="navLink" to="/" onClick={() => setIsOpen(false)}>
+              Home
+            </NavLink>
+          </li>
+          <li>
+            <NavLink className="navLink" to="/binders" onClick={() => setIsOpen(false)}>
+              Binders
+            </NavLink>
+          </li>
+          <li>
+            <NavLink className="navLink" to="/cards" onClick={() => setIsOpen(false)}>
+              Cards
+            </NavLink>
+          </li>
+        </ul>
       </div>
     </nav>
   );
