@@ -1,4 +1,14 @@
 /* Nav Menu Styles */
+.site-wrapper {
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+}
+
+.site-wrapper > main {
+  flex: 1;
+}
+
 #nav {
   width: 100%;
   background-color: #373e40;
@@ -91,6 +101,36 @@
 
 #navLinks li .navLink {
   font-size: 2rem;
+}
+
+.site-footer {
+  margin-top: 2rem;
+  border-top: 1px solid rgb(172 236 161 / 35%);
+  background: var(--color-dark-accent);
+  color: var(--color-light-font);
+}
+
+.site-footer-content {
+  width: min(1200px, calc(100% - 2rem));
+  margin: 0 auto;
+  padding: 1.5rem 0;
+}
+
+.site-footer-brand {
+  margin-bottom: 0.35rem;
+  color: var(--color-font);
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.site-footer small {
+  display: block;
+  margin-top: 0.85rem;
+  font-size: 0.8rem;
+}
+
+.site-footer a {
+  color: var(--color-accent);
 }
 
 .cards-page {

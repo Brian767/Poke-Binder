@@ -1,28 +1,6 @@
 import { getCards } from "../api/pokemonTcgApi";
 import { useState } from "react";
-
-function getPriceLabel(card) {
-  const tcgplayer = card.pricing?.tcgplayer;
-  const tcgplayerVariants = [
-    ["normal", tcgplayer?.normal],
-    ["holofoil", tcgplayer?.holofoil],
-    ["reverse holofoil", tcgplayer?.["reverse-holofoil"]],
-    ["holo", tcgplayer?.holo],
-    ["reverse", tcgplayer?.reverse],
-  ];
-  const marketPrice = tcgplayerVariants.find(
-    ([, variant]) => typeof variant?.marketPrice === "number",
-  );
-
-  if (marketPrice) {
-    const [variantName, variant] = marketPrice;
-    return `${new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-    }).format(variant.marketPrice)}`;
-  }
-  return "Price unavailable";
-}
+import CardItem from "../components/CardItem";
 
 export default function Cards() {
   const [inputValue, setInputValue] = useState("");
@@ -54,21 +32,6 @@ export default function Cards() {
     }
   }
 
-  const cardElements = cards.map((card) => {
-    return (
-      <article className="card-item" key={card.id}>
-        <img src={`${card.image}/low.png`} alt={`${card.name} card`} />
-        <h3>{card.name}</h3>
-        <p className="card-set">{card.set?.name ?? "Unavailable"}</p>
-        <div className="card-meta">
-          <span>{card.rarity ?? "Unavailable"}</span>
-          <span>#{card.localId ?? "—"}</span>
-        </div>
-        <p className="card-price">{getPriceLabel(card)}</p>
-      </article>
-    );
-  });
-
   return (
     <section className="cards-page">
       <header className="cards-header">
@@ -93,7 +56,11 @@ export default function Cards() {
       {hasSearched && !isLoading && !error && cards.length === 0 && (
         <p className="cards-empty">No cards with images found. Try another Pokémon name.</p>
       )}
-      {cards.length > 0 && <div className="card-grid">{cardElements}</div>}
+      {cards.length > 0 && (
+        <div className="card-grid">
+          {cards.map((card) => <CardItem key={card.id} card={card} />)}
+        </div>
+      )}
     </section>
   );
 }
