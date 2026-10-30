@@ -1,5 +1,28 @@
-import {getCards, getCard} from "../api/pokemonTcgApi";
+import { getCards } from "../api/pokemonTcgApi";
 import { useState } from "react";
+
+function getPriceLabel(card) {
+  const tcgplayer = card.pricing?.tcgplayer;
+  const tcgplayerVariants = [
+    ["normal", tcgplayer?.normal],
+    ["holofoil", tcgplayer?.holofoil],
+    ["reverse holofoil", tcgplayer?.["reverse-holofoil"]],
+    ["holo", tcgplayer?.holo],
+    ["reverse", tcgplayer?.reverse],
+  ];
+  const marketPrice = tcgplayerVariants.find(
+    ([, variant]) => typeof variant?.marketPrice === "number",
+  );
+
+  if (marketPrice) {
+    const [variantName, variant] = marketPrice;
+    return `${new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+    }).format(variant.marketPrice)}`;
+  }
+  return "Price unavailable";
+}
 
 export default function Cards() {
   const [inputValue, setInputValue] = useState("");
@@ -11,9 +34,8 @@ export default function Cards() {
     setError(null);
 
     try {
-      const cardData = await {getCards}(inputValue);
+      const cardData = await getCards(inputValue);
       setCards(Array.isArray(cardData) ? cardData : []);
-
     } catch (error) {
       setCards([]);
       setError(error.message || "Something went wrong");
@@ -27,7 +49,10 @@ export default function Cards() {
           <img src={`${card.image}/low.png`} alt={`${card.name} card`} />
         )}
         <h3>{card.name}</h3>
-        <p>{card.id}</p>
+        <p>{card.set?.name ?? "Unavailable"}</p>
+        <p>{card.rarity ?? "Unavailable"}</p>
+        <p>{card.localId ?? "Unavailable"}</p>
+        <p>{getPriceLabel(card)}</p>
       </div>
     );
   });
@@ -45,7 +70,7 @@ export default function Cards() {
       </form>
 
       {error && <p role="alert">{error}</p>}
-      {cards.length > 0 && cardElements}
+      {cards.length > 0 && <div className="card-grid">{cardElements}</div>}
     </section>
   );
 }
