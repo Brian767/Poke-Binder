@@ -3,7 +3,7 @@ import CardItem from "../components/CardItem";
 
 const STORAGE_KEY = "poke-binder:cards:v1";
 
-function loadBinderCards() {
+function loadCollectionCards() {
   try {
     const storedCards = window.localStorage.getItem(STORAGE_KEY);
     const parsedCards = storedCards ? JSON.parse(storedCards) : [];
@@ -20,7 +20,7 @@ function loadBinderCards() {
         card.image &&
         !uniqueCards.has(card.id)
       ) {
-        uniqueCards.set(card.id, card); 
+        uniqueCards.set(card.id, card);
       }
     }
 
@@ -30,23 +30,23 @@ function loadBinderCards() {
   }
 }
 
-export default function Binders() {
-  const [cards] = useState(loadBinderCards);
+export default function Collection() {
+  const [cards] = useState(loadCollectionCards);
 
   return (
-    <section className="binders-page">
-      <header className="binders-header">
-        <h1>My Binder</h1>
+    <section className="collection-page">
+      <header className="collection-header">
+        <h1>My Collection</h1>
         <p>Your saved Pokémon cards, all in one place.</p>
       </header>
 
       {cards.length === 0 ? (
-        <p className="binders-empty">
-          Your binder is empty. Add cards from the Cards page to see them here.
+        <p className="collection-empty">
+          Your collection is empty. Add cards from the Cards page to see them here.
         </p>
       ) : (
         <>
-          <p className="binders-count">
+          <p className="collection-count">
             {cards.length} {cards.length === 1 ? "card" : "cards"}
           </p>
           <div className="card-grid">

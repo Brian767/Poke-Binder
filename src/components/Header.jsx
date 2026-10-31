@@ -45,8 +45,8 @@ export default function Navbar() {
             </NavLink>
           </li>
           <li>
-            <NavLink className="navLink" to="/binders" onClick={() => setIsOpen(false)}>
-              Binders
+            <NavLink className="navLink" to="/collection" onClick={() => setIsOpen(false)}>
+              Collection
             </NavLink>
           </li>
           <li>

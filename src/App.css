@@ -152,28 +152,28 @@
   color: var(--color-light-font);
 }
 
-.binders-page {
+.collection-page {
   width: min(1200px, calc(100% - 2rem));
   margin: 0 auto;
   padding: 2rem 0;
 }
 
-.binders-header {
+.collection-header {
   margin-bottom: 1.5rem;
 }
 
-.binders-header h1 {
+.collection-header h1 {
   margin-bottom: 0.5rem;
   color: var(--color-font);
 }
 
-.binders-header p,
-.binders-empty,
-.binders-count {
+.collection-header p,
+.collection-empty,
+.collection-count {
   color: var(--color-light-font);
 }
 
-.binders-count {
+.collection-count {
   margin-bottom: 1rem;
 }
 

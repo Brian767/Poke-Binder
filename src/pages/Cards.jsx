@@ -2,12 +2,12 @@ import { getCards } from "../api/pokemonTcgApi";
 import { useState } from "react";
 import CardItem from "../components/CardItem";
 
-const BINDER_STORAGE_KEY = "poke-binder:cards:v1";
+const COLLECTION_STORAGE_KEY = "poke-binder:cards:v1";
 
 function loadSavedCardIds() {
   try {
     const savedCards = JSON.parse(
-      window.localStorage.getItem(BINDER_STORAGE_KEY) || "[]",
+      window.localStorage.getItem(COLLECTION_STORAGE_KEY) || "[]",
     );
     return Array.isArray(savedCards)
       ? savedCards.map((card) => card?.id).filter(Boolean)
@@ -24,18 +24,18 @@ export default function Cards() {
   const [isLoading, setIsLoading] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
   const [savedCardIds, setSavedCardIds] = useState(loadSavedCardIds);
-  const [binderError, setBinderError] = useState(null);
+  const [collectionError, setCollectionError] = useState(null);
 
-  function addToBinder(card) {
-    setBinderError(null);
+  function addToCollection(card) {
+    setCollectionError(null);
 
     try {
       const storedCards = JSON.parse(
-        window.localStorage.getItem(BINDER_STORAGE_KEY) || "[]",
+        window.localStorage.getItem(COLLECTION_STORAGE_KEY) || "[]",
       );
-      const binderCards = Array.isArray(storedCards) ? storedCards : [];
+      const collectionCards = Array.isArray(storedCards) ? storedCards : [];
 
-      if (binderCards.some((savedCard) => savedCard?.id === card.id)) {
+      if (collectionCards.some((savedCard) => savedCard?.id === card.id)) {
         setSavedCardIds((ids) => (ids.includes(card.id) ? ids : [...ids, card.id]));
         return;
       }
@@ -48,15 +48,15 @@ export default function Cards() {
         rarity: card.rarity ?? "Unknown rarity",
         cardNumber: String(card.localId ?? ""),
       };
-      const updatedCards = [...binderCards, savedCard];
+      const updatedCards = [...collectionCards, savedCard];
 
       window.localStorage.setItem(
-        BINDER_STORAGE_KEY,
+        COLLECTION_STORAGE_KEY,
         JSON.stringify(updatedCards),
       );
       setSavedCardIds((ids) => [...ids, card.id]);
     } catch {
-      setBinderError("Could not save this card. Please try again.");
+      setCollectionError("Could not save this card. Please try again.");
     }
   }
 
@@ -103,7 +103,7 @@ export default function Cards() {
       </form>
 
       {error && <p role="alert">{error}</p>}
-      {binderError && <p role="alert">{binderError}</p>}
+      {collectionError && <p role="alert">{collectionError}</p>}
       {isLoading && <p className="cards-status" role="status">Searching cards…</p>}
       {hasSearched && !isLoading && !error && cards.length === 0 && (
         <p className="cards-empty">No cards with images found. Try another Pokémon name.</p>
@@ -114,7 +114,7 @@ export default function Cards() {
             <CardItem
               key={card.id}
               card={card}
-              onAddToBinder={addToBinder}
+              onAddToCollection={addToCollection}
               isSaved={savedCardIds.includes(card.id)}
             />
           ))}

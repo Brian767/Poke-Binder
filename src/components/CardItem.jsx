@@ -25,7 +25,7 @@ function getPriceLabel(card) {
 export default function CardItem({
   card,
   showPrice = true,
-  onAddToBinder,
+  onAddToCollection,
   isSaved = false,
 }) {
   return (
@@ -38,14 +38,14 @@ export default function CardItem({
         <span>#{card.localId ?? card.cardNumber ?? "—"}</span>
       </div>
       {showPrice && <p className="card-price">{getPriceLabel(card)}</p>}
-      {onAddToBinder && (
+      {onAddToCollection && (
         <button
           className="card-add-button"
           type="button"
-          onClick={() => onAddToBinder(card)}
+          onClick={() => onAddToCollection(card)}
           disabled={isSaved}
         >
-          {isSaved ? "In binder" : "Add to binder"}
+          {isSaved ? "In collection" : "Add to collection"}
         </button>
       )}
     </article>

@@ -2,7 +2,7 @@ import { Route, Routes, BrowserRouter } from "react-router";
 import "./App.css";
 import Home from "./pages/Home";
 import Cards from "./pages/Cards";
-import Binders from "./pages/Binders";
+import Collection from "./pages/Collection";
 import Layout from "./components/Layout";
 
 function App() {
@@ -12,7 +12,7 @@ function App() {
         <Route path="/" element={<Layout />}>
           <Route index element={<Home />} />
           <Route path="cards" element={<Cards />} />
-          <Route path="binders" element={<Binders />} />
+          <Route path="collection" element={<Collection />} />
         </Route>
       </Routes>
     </BrowserRouter>
