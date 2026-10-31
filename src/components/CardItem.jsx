@@ -22,17 +22,32 @@ function getPriceLabel(card) {
   return "Price unavailable";
 }
 
-export default function CardItem({ card }) {
+export default function CardItem({
+  card,
+  showPrice = true,
+  onAddToBinder,
+  isSaved = false,
+}) {
   return (
     <article className="card-item">
       <img src={`${card.image}/low.png`} alt={`${card.name} card`} />
       <h3>{card.name}</h3>
-      <p className="card-set">{card.set?.name ?? "Unavailable"}</p>
+      <p className="card-set">{card.set?.name ?? card.set ?? "Unavailable"}</p>
       <div className="card-meta">
         <span>{card.rarity ?? "Unavailable"}</span>
-        <span>#{card.localId ?? "—"}</span>
+        <span>#{card.localId ?? card.cardNumber ?? "—"}</span>
       </div>
-      <p className="card-price">{getPriceLabel(card)}</p>
+      {showPrice && <p className="card-price">{getPriceLabel(card)}</p>}
+      {onAddToBinder && (
+        <button
+          className="card-add-button"
+          type="button"
+          onClick={() => onAddToBinder(card)}
+          disabled={isSaved}
+        >
+          {isSaved ? "In binder" : "Add to binder"}
+        </button>
+      )}
     </article>
   );
 }

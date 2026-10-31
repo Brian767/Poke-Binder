@@ -152,6 +152,31 @@
   color: var(--color-light-font);
 }
 
+.binders-page {
+  width: min(1200px, calc(100% - 2rem));
+  margin: 0 auto;
+  padding: 2rem 0;
+}
+
+.binders-header {
+  margin-bottom: 1.5rem;
+}
+
+.binders-header h1 {
+  margin-bottom: 0.5rem;
+  color: var(--color-font);
+}
+
+.binders-header p,
+.binders-empty,
+.binders-count {
+  color: var(--color-light-font);
+}
+
+.binders-count {
+  margin-bottom: 1rem;
+}
+
 .cards-search-input {
   width: min(100%, 24rem);
   padding: 0.65rem 0.8rem;
@@ -249,6 +274,29 @@
   margin: 0.75rem 0.25rem 0;
   color: var(--color-accent);
   font-weight: 700;
+}
+
+.card-item .card-add-button {
+  margin: 0.85rem 0.25rem 0;
+  padding: 0.55rem 0.75rem;
+  border: 0;
+  border-radius: 0.45rem;
+  background: var(--color-accent);
+  color: var(--color-main);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.card-item .card-add-button:disabled {
+  background: var(--color-main);
+  color: var(--color-light-font);
+  cursor: default;
+}
+
+.card-item .card-add-button:focus-visible {
+  outline: 2px solid var(--color-font);
+  outline-offset: 2px;
 }
 
 @media (max-width: 640px) {
