@@ -28,17 +28,6 @@ export default function Navbar() {
         </button>
 
         <ul id="navLinks" className={isOpen ? "open" : ""}>
-          <li className="menu-close-item">
-            <button
-              type="button"
-              className="menu-close"
-              onClick={() => setIsOpen(false)}
-              aria-label="Close navigation menu"
-            >
-              <span className="bar-close"></span>
-              <span className="bar-close"></span>
-            </button>
-          </li>
           <li>
             <NavLink className="navLink" to="/" onClick={() => setIsOpen(false)}>
               Home
