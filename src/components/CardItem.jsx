@@ -1,5 +1,5 @@
-function getPriceLabel(card) {
-  const tcgplayer = card.pricing?.tcgplayer;
+export function getTcgplayerMarketPrice(card) {
+  const tcgplayer = card?.pricing?.tcgplayer;
   const tcgplayerVariants = [
     ["normal", tcgplayer?.normal],
     ["holofoil", tcgplayer?.holofoil],
@@ -12,14 +12,21 @@ function getPriceLabel(card) {
   );
 
   if (marketPrice) {
-    const [, variant] = marketPrice;
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-    }).format(variant.marketPrice);
+    const [variantName, variant] = marketPrice;
+    return { amount: variant.marketPrice, variantName };
   }
 
-  return "Price unavailable";
+  return null;
+}
+
+function getPriceLabel(card) {
+  const price = getTcgplayerMarketPrice(card);
+  if (!price) return "Price unavailable";
+
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+  }).format(price.amount);
 }
 
 export default function CardItem({

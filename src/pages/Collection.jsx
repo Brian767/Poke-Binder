@@ -1,5 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { getCard } from "../api/pokemonTcgApi";
 import CardItem from "../components/CardItem";
+import { getTcgplayerMarketPrice } from "../components/CardItem";
 
 const STORAGE_KEY = "poke-collection:cards:v1";
 const LEGACY_STORAGE_KEY = "poke-binder:cards:v1";
@@ -43,6 +45,39 @@ function loadCollectionCards() {
 export default function Collection() {
   const [cards, setCards] = useState(loadCollectionCards);
   const [error, setError] = useState(null);
+  const [cardDetails, setCardDetails] = useState({});
+  const [isLoadingPrices, setIsLoadingPrices] = useState(false);
+
+  useEffect(() => {
+    if (cards.length === 0) {
+      setCardDetails({});
+      setIsLoadingPrices(false);
+      return;
+    }
+
+    let isCurrent = true;
+    setIsLoadingPrices(true);
+
+    Promise.all(
+      cards.map(async (card) => {
+        try {
+          return [card.id, await getCard(card.id)];
+        } catch {
+          return [card.id, null];
+        }
+      }),
+    )
+      .then((entries) => {
+        if (isCurrent) setCardDetails(Object.fromEntries(entries));
+      })
+      .finally(() => {
+        if (isCurrent) setIsLoadingPrices(false);
+      });
+
+    return () => {
+      isCurrent = false;
+    };
+  }, [cards]);
 
   function removeFromCollection(cardId) {
     const updatedCards = cards.filter((card) => card.id !== cardId);
@@ -55,6 +90,17 @@ export default function Collection() {
       setError("Could not remove this card. Please try again.");
     }
   }
+
+  const currentPrices = cards
+    .map((card) => getTcgplayerMarketPrice(cardDetails[card.id]))
+    .filter(Boolean);
+  const totalValue = currentPrices.reduce((total, price) => total + price.amount, 0);
+  const unpricedCardCount = cards.length - currentPrices.length;
+  const formatUSD = (amount) =>
+    new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+    }).format(amount);
 
   return (
     <section className="collection-page">
@@ -74,12 +120,27 @@ export default function Collection() {
           <p className="collection-count">
             {cards.length} {cards.length === 1 ? "card" : "cards"}
           </p>
+          <section className="collection-value" aria-live="polite">
+            <h2>Estimated collection value</h2>
+            {isLoadingPrices ? (
+              <p role="status">Loading current TCGplayer prices…</p>
+            ) : (
+              <>
+                <p className="collection-total">{formatUSD(totalValue)}</p>
+                {unpricedCardCount > 0 && (
+                  <p>
+                    TCGplayer prices unavailable for {unpricedCardCount} {unpricedCardCount === 1 ? "card" : "cards"},
+                    those cards are excluded from the total.
+                  </p>
+                )}
+              </>
+            )}
+          </section>
           <div className="card-grid">
             {cards.map((card) => (
               <CardItem
                 key={card.id}
-                card={card}
-                showPrice={false}
+                card={{ ...card, ...(cardDetails[card.id] ?? {}) }}
                 onRemoveFromCollection={removeFromCollection}
               />
             ))}
