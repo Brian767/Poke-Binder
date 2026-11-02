@@ -1,4 +1,4 @@
-# Poke Binder
+# PokeCollection
 
 A React app for searching Pokémon TCG cards, viewing card images, and checking available market pricing.
 

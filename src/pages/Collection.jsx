@@ -1,14 +1,24 @@
 import { useState } from "react";
 import CardItem from "../components/CardItem";
 
-const STORAGE_KEY = "poke-binder:cards:v1";
+const STORAGE_KEY = "poke-collection:cards:v1";
+const LEGACY_STORAGE_KEY = "poke-binder:cards:v1";
 
 function loadCollectionCards() {
   try {
-    const storedCards = window.localStorage.getItem(STORAGE_KEY);
+    let storedCards = window.localStorage.getItem(STORAGE_KEY);
+    const isMigrating = storedCards === null;
+    if (isMigrating) {
+      storedCards = window.localStorage.getItem(LEGACY_STORAGE_KEY);
+    }
     const parsedCards = storedCards ? JSON.parse(storedCards) : [];
 
     if (!Array.isArray(parsedCards)) return [];
+
+    if (isMigrating && storedCards !== null) {
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(parsedCards));
+      window.localStorage.removeItem(LEGACY_STORAGE_KEY);
+    }
 
     const uniqueCards = new Map();
     for (const card of parsedCards) {
@@ -31,7 +41,20 @@ function loadCollectionCards() {
 }
 
 export default function Collection() {
-  const [cards] = useState(loadCollectionCards);
+  const [cards, setCards] = useState(loadCollectionCards);
+  const [error, setError] = useState(null);
+
+  function removeFromCollection(cardId) {
+    const updatedCards = cards.filter((card) => card.id !== cardId);
+
+    try {
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedCards));
+      setCards(updatedCards);
+      setError(null);
+    } catch {
+      setError("Could not remove this card. Please try again.");
+    }
+  }
 
   return (
     <section className="collection-page">
@@ -39,6 +62,8 @@ export default function Collection() {
         <h1>My Collection</h1>
         <p>Your saved Pokémon cards, all in one place.</p>
       </header>
+
+      {error && <p className="collection-error" role="alert">{error}</p>}
 
       {cards.length === 0 ? (
         <p className="collection-empty">
@@ -51,7 +76,12 @@ export default function Collection() {
           </p>
           <div className="card-grid">
             {cards.map((card) => (
-              <CardItem key={card.id} card={card} showPrice={false} />
+              <CardItem
+                key={card.id}
+                card={card}
+                showPrice={false}
+                onRemoveFromCollection={removeFromCollection}
+              />
             ))}
           </div>
         </>

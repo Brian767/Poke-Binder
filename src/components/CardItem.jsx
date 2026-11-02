@@ -26,6 +26,7 @@ export default function CardItem({
   card,
   showPrice = true,
   onAddToCollection,
+  onRemoveFromCollection,
   isSaved = false,
 }) {
   return (
@@ -46,6 +47,15 @@ export default function CardItem({
           disabled={isSaved}
         >
           {isSaved ? "In collection" : "Add to collection"}
+        </button>
+      )}
+      {onRemoveFromCollection && (
+        <button
+          className="card-remove-button"
+          type="button"
+          onClick={() => onRemoveFromCollection(card.id)}
+        >
+          Remove from collection
         </button>
       )}
     </article>

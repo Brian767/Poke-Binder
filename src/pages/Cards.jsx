@@ -2,16 +2,29 @@ import { getCards } from "../api/pokemonTcgApi";
 import { useState } from "react";
 import CardItem from "../components/CardItem";
 
-const COLLECTION_STORAGE_KEY = "poke-binder:cards:v1";
+const COLLECTION_STORAGE_KEY = "poke-collection:cards:v1";
+const LEGACY_STORAGE_KEY = "poke-binder:cards:v1";
 
 function loadSavedCardIds() {
   try {
-    const savedCards = JSON.parse(
-      window.localStorage.getItem(COLLECTION_STORAGE_KEY) || "[]",
-    );
-    return Array.isArray(savedCards)
-      ? savedCards.map((card) => card?.id).filter(Boolean)
-      : [];
+    let savedCards = window.localStorage.getItem(COLLECTION_STORAGE_KEY);
+    const isMigrating = savedCards === null;
+    if (savedCards === null) {
+      savedCards = window.localStorage.getItem(LEGACY_STORAGE_KEY);
+    }
+
+    const parsedCards = JSON.parse(savedCards || "[]");
+    if (!Array.isArray(parsedCards)) return [];
+
+    if (isMigrating && savedCards !== null) {
+      window.localStorage.setItem(
+        COLLECTION_STORAGE_KEY,
+        JSON.stringify(parsedCards),
+      );
+      window.localStorage.removeItem(LEGACY_STORAGE_KEY);
+    }
+
+    return parsedCards.map((card) => card?.id).filter(Boolean);
   } catch {
     return [];
   }
