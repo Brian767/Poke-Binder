@@ -14,7 +14,7 @@
   z-index: 10;
   width: 100%;
   border-bottom: 1px solid rgb(172 236 161 / 45%);
-  background: rgb(48 82 82 / 96%);
+  background: var(--color-main);
   box-shadow: 0 0.4rem 1.5rem rgb(0 0 0 / 12%);
 }
 
@@ -26,11 +26,17 @@
   padding: 0.75rem max(1rem, calc((100% - 1200px) / 2));
 }
 
-.nav-padding > .navLink {
-  color: var(--color-font);
-  font-size: 1.2rem;
+.nav-brand {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.85rem 1.15rem;
+  border-radius: 0.8rem;
+  background: #305252;
+  color: #f5edf0;
+  font-size: 1.35rem;
   font-weight: 800;
-  letter-spacing: -0.03em;
+  letter-spacing: 0.08em;
+  line-height: 1;
   text-decoration: none;
 }
 
@@ -77,7 +83,8 @@
 }
 
 .hamburger:focus-visible,
-.navLink:focus-visible {
+.navLink:focus-visible,
+.nav-brand:focus-visible {
   outline: 2px solid var(--color-accent);
   outline-offset: 3px;
 }

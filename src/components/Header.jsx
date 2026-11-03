@@ -11,8 +11,8 @@ export default function Navbar() {
   return (
     <nav id="nav" aria-label="Main navigation">
       <div className="nav-padding">
-        <Link className="navLink" to="/" aria-label="PokeCollection home">
-          PokeCollection
+        <Link className="nav-brand" to="/" aria-label="PokeCollection home">
+          PIKA BNDR
         </Link>
         <button
           type="button"
