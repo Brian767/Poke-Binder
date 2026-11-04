@@ -1,19 +1,52 @@
 :root {
+  --color-dark: #0a0908;
   --color-main: #373e40;
   --color-dark-accent: #305252;
   --color-accent: #aceca1;
   --color-font: #f5edf0;
-  --color-light-font : #d1ccdc;
+  --color-light-font: #d1ccdc;
 }
 
-html body{
+html body {
   margin: 0;
   padding: 0;
   font-family: Arial, Helvetica, sans-serif;
 }
 
-body{
-  background-color: #373e40;
+body {
+  margin: 0;
+  background-color: #0a0908;
+  color: #ffffff; /* Make sure your text color contrasts well */
+}
+
+/* Move the pattern and mask here */
+.bg-pattern {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -1; /* Pushes the pattern behind all content */
+  pointer-events: none; /* Prevents it from blocking clicks */
+
+  background-color: #0a0908;
+  opacity: 1;
+  background-image: radial-gradient(#aceca1 1.8px, #0a0908 1.8px);
+  background-size: 18px 18px;
+  mask-image: radial-gradient(
+    ellipse at center,
+    rgba(0, 0, 0, 0) 40%,
+    rgba(0, 0, 0, 0.6) 100%
+  );
+  -webkit-mask-image: radial-gradient(
+    ellipse at center,
+    rgba(0, 0, 0, 0) 40%,
+    rgba(0, 0, 0, 0.6) 100%
+  );
+  mask-size: 100% 100%;
+  -webkit-mask-size: 100% 100%;
+  mask-repeat: no-repeat;
+  -webkit-mask-repeat: no-repeat;
 }
 div,
 h1,

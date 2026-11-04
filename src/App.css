@@ -277,11 +277,11 @@
   padding: 1.4rem;
   border: 1px solid rgb(209 204 220 / 20%);
   border-radius: 0.9rem;
-  background: rgb(48 82 82 / 55%);
+  background: var(--color-accent);
 }
 
 .home-feature-number {
-  color: var(--color-accent);
+  color: var(--color-dark-accent);
   font-size: 0.78rem;
   font-weight: 700;
   letter-spacing: 0.12em;
@@ -289,14 +289,14 @@
 
 .home-feature h2 {
   margin-top: 0.85rem;
-  color: var(--color-font);
+  color: var(--color-main );
   font-size: 1.1rem;
 }
 
 .home-feature p {
   min-height: 3.2em;
   margin-top: 0.5rem;
-  color: var(--color-light-font);
+  color: var(--color-dark-accent);
   line-height: 1.55;
 }
 
