@@ -1,5 +1,5 @@
 import { getCards } from "../api/pokemonTcgApi";
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import CardItem from "../components/CardItem";
 
 const COLLECTION_STORAGE_KEY = "poke-collection:cards:v1";
@@ -39,6 +39,32 @@ export default function Cards() {
   const [savedCardIds, setSavedCardIds] = useState(loadSavedCardIds);
   const [collectionError, setCollectionError] = useState(null);
 
+  const searchCards = useCallback(async (name) => {
+    setError(null);
+    setCards([]);
+
+    if (!name.trim()) {
+      setError("Enter a Pokémon name to search.");
+      return;
+    }
+
+    setIsLoading(true);
+    setHasSearched(true);
+    try {
+      const cardData = await getCards(name);
+      setCards(Array.isArray(cardData) ? cardData.filter((card) => card.image) : []);
+    } catch (searchError) {
+      setCards([]);
+      setError(searchError.message || "Something went wrong");
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    searchCards("Leafeon");
+  }, [searchCards]);
+
   function addToCollection(card) {
     setCollectionError(null);
 
@@ -75,25 +101,7 @@ export default function Cards() {
 
   async function handleSubmit(event) {
     event.preventDefault();
-    setError(null);
-    setCards([]);
-
-    if (!inputValue.trim()) {
-      setError("Enter a Pokémon name to search.");
-      return;
-    }
-
-    setIsLoading(true);
-    setHasSearched(true);
-    try {
-      const cardData = await getCards(inputValue);
-      setCards(Array.isArray(cardData) ? cardData.filter((card) => card.image) : []);
-    } catch (error) {
-      setCards([]);
-      setError(error.message || "Something went wrong");
-    } finally {
-      setIsLoading(false);
-    }
+    await searchCards(inputValue);
   }
 
   return (
