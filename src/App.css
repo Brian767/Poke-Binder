@@ -141,6 +141,38 @@
   color: var(--color-accent);
 }
 
+@media (min-width: 768px) {
+  .hamburger {
+    display: none;
+  }
+
+  #navLinks,
+  #navLinks.open {
+    position: static;
+    max-height: none;
+    flex-direction: row;
+    justify-content: flex-end;
+    gap: 0.25rem;
+    overflow: visible;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+    opacity: 1;
+    visibility: visible;
+    transition: none;
+  }
+
+  #navLinks li {
+    width: auto;
+  }
+
+  #navLinks .navLink {
+    padding: 0.7rem 0.9rem;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .hamburger,
   .bar,
