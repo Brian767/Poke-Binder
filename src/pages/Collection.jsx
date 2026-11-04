@@ -32,7 +32,12 @@ function loadCollectionCards() {
         card.image &&
         !uniqueCards.has(card.id)
       ) {
-        uniqueCards.set(card.id, card);
+        uniqueCards.set(card.id, {
+          ...card,
+          quantity: Number.isInteger(card.quantity) && card.quantity > 0
+            ? card.quantity
+            : 1,
+        });
       }
     }
 
@@ -79,23 +84,32 @@ export default function Collection() {
     };
   }, [cards]);
 
-  function removeFromCollection(cardId) {
-    const updatedCards = cards.filter((card) => card.id !== cardId);
+  function changeQuantity(cardId, amount) {
+    const updatedCards = cards.flatMap((card) => {
+      if (card.id !== cardId) return [card];
+      const quantity = Math.max(0, (card.quantity ?? 1) + amount);
+      return quantity === 0 ? [] : [{ ...card, quantity }];
+    });
 
     try {
       window.localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedCards));
       setCards(updatedCards);
       setError(null);
     } catch {
-      setError("Could not remove this card. Please try again.");
+      setError("Could not update this card quantity. Please try again.");
     }
   }
 
-  const currentPrices = cards
-    .map((card) => getTcgplayerMarketPrice(cardDetails[card.id]))
-    .filter(Boolean);
-  const totalValue = currentPrices.reduce((total, price) => total + price.amount, 0);
-  const unpricedCardCount = cards.length - currentPrices.length;
+  const totalCopies = cards.reduce((total, card) => total + (card.quantity ?? 1), 0);
+  const totalValue = cards.reduce((total, card) => {
+    const price = getTcgplayerMarketPrice(cardDetails[card.id]);
+    return total + (price ? price.amount * (card.quantity ?? 1) : 0);
+  }, 0);
+  const unpricedCardCount = cards.reduce((total, card) => (
+    getTcgplayerMarketPrice(cardDetails[card.id])
+      ? total
+      : total + (card.quantity ?? 1)
+  ), 0);
   const formatUSD = (amount) =>
     new Intl.NumberFormat("en-US", {
       style: "currency",
@@ -118,7 +132,7 @@ export default function Collection() {
       ) : (
         <>
           <p className="collection-count">
-            {cards.length} {cards.length === 1 ? "card" : "cards"}
+            {cards.length} unique {cards.length === 1 ? "card" : "cards"} · {totalCopies} {totalCopies === 1 ? "copy" : "copies"}
           </p>
           <section className="collection-value" aria-live="polite">
             <h2>Estimated collection value</h2>
@@ -129,8 +143,8 @@ export default function Collection() {
                 <p className="collection-total">{formatUSD(totalValue)}</p>
                 {unpricedCardCount > 0 && (
                   <p>
-                    TCGplayer prices unavailable for {unpricedCardCount} {unpricedCardCount === 1 ? "card" : "cards"},
-                    those cards are excluded from the total.
+                    TCGplayer prices unavailable for {unpricedCardCount} {unpricedCardCount === 1 ? "copy" : "copies"};
+                    those copies are excluded from the total.
                   </p>
                 )}
               </>
@@ -141,7 +155,8 @@ export default function Collection() {
               <CardItem
                 key={card.id}
                 card={{ ...card, ...(cardDetails[card.id] ?? {}) }}
-                onRemoveFromCollection={removeFromCollection}
+                quantity={card.quantity ?? 1}
+                onQuantityChange={(amount) => changeQuantity(card.id, amount)}
               />
             ))}
           </div>

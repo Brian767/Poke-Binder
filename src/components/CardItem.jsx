@@ -32,9 +32,8 @@ function getPriceLabel(card) {
 export default function CardItem({
   card,
   showPrice = true,
-  onAddToCollection,
-  onRemoveFromCollection,
-  isSaved = false,
+  quantity = 0,
+  onQuantityChange,
 }) {
   return (
     <article className="card-item">
@@ -46,24 +45,28 @@ export default function CardItem({
         <span>#{card.localId ?? card.cardNumber ?? "—"}</span>
       </div>
       {showPrice && <p className="card-price">{getPriceLabel(card)}</p>}
-      {onAddToCollection && (
-        <button
-          className="card-add-button"
-          type="button"
-          onClick={() => onAddToCollection(card)}
-          disabled={isSaved}
-        >
-          {isSaved ? "In collection" : "Add to collection"}
-        </button>
-      )}
-      {onRemoveFromCollection && (
-        <button
-          className="card-remove-button"
-          type="button"
-          onClick={() => onRemoveFromCollection(card.id)}
-        >
-          Remove from collection
-        </button>
+      {onQuantityChange && (
+        <div className="card-quantity" role="group" aria-label={`${card.name} quantity`}>
+          <span>Qty:</span>
+          <div className="card-quantity-controls">
+            <button
+              type="button"
+              onClick={() => onQuantityChange(-1)}
+              disabled={quantity === 0}
+              aria-label={`Remove one ${card.name}`}
+            >
+              −
+            </button>
+            <output aria-live="polite">{quantity}</output>
+            <button
+              type="button"
+              onClick={() => onQuantityChange(1)}
+              aria-label={`Add one ${card.name}`}
+            >
+              +
+            </button>
+          </div>
+        </div>
       )}
     </article>
   );

@@ -1,11 +1,11 @@
-import { getCards } from "../api/pokemonTcgApi";
-import { useCallback, useEffect, useState } from "react";
+import { getCards, getLatestSetCards } from "../api/pokemonTcgApi";
+import { useCallback, useEffect, useRef, useState } from "react";
 import CardItem from "../components/CardItem";
 
 const COLLECTION_STORAGE_KEY = "poke-collection:cards:v1";
 const LEGACY_STORAGE_KEY = "poke-binder:cards:v1";
 
-function loadSavedCardIds() {
+function loadSavedQuantities() {
   try {
     let savedCards = window.localStorage.getItem(COLLECTION_STORAGE_KEY);
     const isMigrating = savedCards === null;
@@ -24,24 +24,35 @@ function loadSavedCardIds() {
       window.localStorage.removeItem(LEGACY_STORAGE_KEY);
     }
 
-    return parsedCards.map((card) => card?.id).filter(Boolean);
+    return parsedCards.reduce((quantities, card) => {
+      if (card?.id) {
+        quantities[card.id] = Number.isInteger(card.quantity) && card.quantity > 0
+          ? card.quantity
+          : 1;
+      }
+      return quantities;
+    }, {});
   } catch {
-    return [];
+    return {};
   }
 }
 
 export default function Cards() {
   const [inputValue, setInputValue] = useState("");
   const [cards, setCards] = useState([]);
+  const [defaultSetName, setDefaultSetName] = useState("");
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
-  const [savedCardIds, setSavedCardIds] = useState(loadSavedCardIds);
+  const [cardQuantities, setCardQuantities] = useState(loadSavedQuantities);
   const [collectionError, setCollectionError] = useState(null);
+  const hasManualSearch = useRef(false);
 
   const searchCards = useCallback(async (name) => {
+    hasManualSearch.current = true;
     setError(null);
     setCards([]);
+    setDefaultSetName("");
 
     if (!name.trim()) {
       setError("Enter a Pokémon name to search.");
@@ -62,10 +73,32 @@ export default function Cards() {
   }, []);
 
   useEffect(() => {
-    searchCards("Leafeon");
-  }, [searchCards]);
+    let isCurrent = true;
 
-  function addToCollection(card) {
+    async function loadLatestSet() {
+      setIsLoading(true);
+      try {
+        const result = await getLatestSetCards();
+        if (isCurrent && !hasManualSearch.current) {
+          setCards(result.cards);
+          setDefaultSetName(result.setName);
+        }
+      } catch (loadError) {
+        if (isCurrent && !hasManualSearch.current) {
+          setError(loadError.message || "Could not load the latest set.");
+        }
+      } finally {
+        if (isCurrent && !hasManualSearch.current) setIsLoading(false);
+      }
+    }
+
+    loadLatestSet();
+    return () => {
+      isCurrent = false;
+    };
+  }, []);
+
+  function changeCardQuantity(card, amount) {
     setCollectionError(null);
 
     try {
@@ -73,11 +106,6 @@ export default function Cards() {
         window.localStorage.getItem(COLLECTION_STORAGE_KEY) || "[]",
       );
       const collectionCards = Array.isArray(storedCards) ? storedCards : [];
-
-      if (collectionCards.some((savedCard) => savedCard?.id === card.id)) {
-        setSavedCardIds((ids) => (ids.includes(card.id) ? ids : [...ids, card.id]));
-        return;
-      }
 
       const savedCard = {
         id: card.id,
@@ -87,13 +115,30 @@ export default function Cards() {
         rarity: card.rarity ?? "Unknown rarity",
         cardNumber: String(card.localId ?? ""),
       };
-      const updatedCards = [...collectionCards, savedCard];
+      const existingIndex = collectionCards.findIndex((saved) => saved?.id === card.id);
+      const existingQuantity = existingIndex >= 0
+        ? (Number.isInteger(collectionCards[existingIndex].quantity)
+          ? collectionCards[existingIndex].quantity
+          : 1)
+        : 0;
+      const nextQuantity = Math.max(0, existingQuantity + amount);
+      let updatedCards;
+
+      if (nextQuantity === 0) {
+        updatedCards = collectionCards.filter((saved) => saved?.id !== card.id);
+      } else if (existingIndex >= 0) {
+        updatedCards = collectionCards.map((saved, index) =>
+          index === existingIndex ? { ...saved, quantity: nextQuantity } : saved,
+        );
+      } else {
+        updatedCards = [...collectionCards, { ...savedCard, quantity: nextQuantity }];
+      }
 
       window.localStorage.setItem(
         COLLECTION_STORAGE_KEY,
         JSON.stringify(updatedCards),
       );
-      setSavedCardIds((ids) => [...ids, card.id]);
+      setCardQuantities((quantities) => ({ ...quantities, [card.id]: nextQuantity }));
     } catch {
       setCollectionError("Could not save this card. Please try again.");
     }
@@ -125,21 +170,29 @@ export default function Cards() {
 
       {error && <p role="alert">{error}</p>}
       {collectionError && <p role="alert">{collectionError}</p>}
-      {isLoading && <p className="cards-status" role="status">Searching cards…</p>}
+      {isLoading && <p className="cards-status" role="status">{hasSearched ? "Searching cards…" : "Loading the latest set…"}</p>}
       {hasSearched && !isLoading && !error && cards.length === 0 && (
         <p className="cards-empty">No cards with images found. Try another Pokémon name.</p>
       )}
+      {!hasSearched && !isLoading && !error && cards.length === 0 && (
+        <p className="cards-empty">No cards with images were found in the latest set.</p>
+      )}
       {cards.length > 0 && (
-        <div className="card-grid">
-          {cards.map((card) => (
-            <CardItem
-              key={card.id}
-              card={card}
-              onAddToCollection={addToCollection}
-              isSaved={savedCardIds.includes(card.id)}
-            />
-          ))}
-        </div>
+        <>
+          <h2 className="cards-results-title">
+            {hasSearched ? "Search results" : `Latest set: ${defaultSetName}`}
+          </h2>
+          <div className="card-grid">
+            {cards.map((card) => (
+              <CardItem
+                key={card.id}
+                card={card}
+                quantity={cardQuantities[card.id] ?? 0}
+                onQuantityChange={(amount) => changeCardQuantity(card, amount)}
+              />
+            ))}
+          </div>
+        </>
       )}
     </section>
   );

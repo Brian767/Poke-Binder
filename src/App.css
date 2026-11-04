@@ -491,6 +491,12 @@
   color: var(--color-light-font);
 }
 
+.cards-results-title {
+  margin: 1.5rem 0 0.85rem;
+  color: var(--color-font);
+  font-size: 1.25rem;
+}
+
 .card-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -543,52 +549,84 @@
   font-weight: 700;
 }
 
-.card-item .card-add-button {
+.card-quantity {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
   margin: 0.85rem 0.25rem 0;
-  padding: 0.55rem 0.75rem;
-  border: 0;
+  color: var(--color-light-font);
+  font-size: 0.78rem;
+}
+
+.card-quantity > span {
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+.card-quantity-controls {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.card-quantity-controls button {
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  place-items: center;
+  border: 1px solid rgb(172 236 161 / 65%);
   border-radius: 0.45rem;
-  background: var(--color-accent);
-  color: var(--color-main);
+  background: var(--color-main);
+  color: var(--color-accent);
   font: inherit;
-  font-weight: 700;
+  font-size: 1.2rem;
+  line-height: 1;
   cursor: pointer;
 }
 
-.card-item .card-add-button:disabled {
-  background: var(--color-main);
-  color: var(--color-light-font);
-  cursor: default;
+.card-quantity-controls button:hover:not(:disabled) {
+  background: var(--color-accent);
+  color: var(--color-main);
 }
 
-.card-item .card-add-button:focus-visible {
+.card-quantity-controls button:disabled {
+  cursor: default;
+  opacity: 0.45;
+}
+
+.card-quantity-controls button:focus-visible {
   outline: 2px solid var(--color-font);
   outline-offset: 2px;
 }
 
-.card-item .card-remove-button {
-  display: block;
-  margin: 0.65rem 0.25rem 0;
-  padding: 0.5rem 0.65rem;
-  border: 1px solid rgb(209 204 220 / 45%);
-  border-radius: 0.45rem;
-  background: var(--color-main);
+.card-quantity-controls output {
+  min-width: 1.5rem;
   color: var(--color-font);
-  font: inherit;
-  cursor: pointer;
-}
-
-.card-item .card-remove-button:hover {
-  border-color: var(--color-accent);
-}
-
-.card-item .card-remove-button:focus-visible {
-  outline: 2px solid var(--color-accent);
-  outline-offset: 2px;
+  font-weight: 700;
+  text-align: center;
 }
 
 @media (max-width: 640px) {
   .card-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .card-quantity {
+    gap: 0.25rem;
+    margin-top: 0.7rem;
+  }
+
+  .card-quantity-controls {
+    gap: 0.15rem;
+  }
+
+  .card-quantity-controls button {
+    width: 1.85rem;
+    height: 1.85rem;
+  }
+
+  .card-quantity-controls output {
+    min-width: 1.15rem;
   }
 }
