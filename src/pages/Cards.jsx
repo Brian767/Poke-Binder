@@ -1,6 +1,6 @@
 import { getCards, getLatestSetCards } from "../api/pokemonTcgApi";
 import { useCallback, useEffect, useRef, useState } from "react";
-import CardItem from "../components/CardItem";
+import CardItem, { getTcgplayerMarketPrice } from "../components/CardItem";
 
 const COLLECTION_STORAGE_KEY = "poke-collection:cards:v1";
 const LEGACY_STORAGE_KEY = "poke-binder:cards:v1";
@@ -46,6 +46,9 @@ export default function Cards() {
   const [hasSearched, setHasSearched] = useState(false);
   const [cardQuantities, setCardQuantities] = useState(loadSavedQuantities);
   const [collectionError, setCollectionError] = useState(null);
+  const [setFilter, setSetFilter] = useState("all");
+  const [rarityFilter, setRarityFilter] = useState("all");
+  const [priceFilter, setPriceFilter] = useState("all");
   const hasManualSearch = useRef(false);
 
   const searchCards = useCallback(async (name) => {
@@ -53,6 +56,9 @@ export default function Cards() {
     setError(null);
     setCards([]);
     setDefaultSetName("");
+    setSetFilter("all");
+    setRarityFilter("all");
+    setPriceFilter("all");
 
     if (!name.trim()) {
       setError("Enter a Pokémon name to search.");
@@ -97,6 +103,28 @@ export default function Cards() {
       isCurrent = false;
     };
   }, []);
+
+  const setOptions = [...new Set(cards.map((card) => card.set?.name).filter(Boolean))].sort();
+  const rarityOptions = [...new Set(cards.map((card) => card.rarity).filter(Boolean))].sort();
+  const filteredCards = cards.filter((card) => {
+    const matchesSet = setFilter === "all" || card.set?.name === setFilter;
+    const matchesRarity = rarityFilter === "all" || card.rarity === rarityFilter;
+    const hasPrice = Boolean(getTcgplayerMarketPrice(card));
+    const matchesPrice = priceFilter === "all"
+      || (priceFilter === "priced" && hasPrice)
+      || (priceFilter === "unpriced" && !hasPrice);
+
+    return matchesSet && matchesRarity && matchesPrice;
+  });
+  const filtersAreActive = setFilter !== "all"
+    || rarityFilter !== "all"
+    || priceFilter !== "all";
+
+  function clearFilters() {
+    setSetFilter("all");
+    setRarityFilter("all");
+    setPriceFilter("all");
+  }
 
   function changeCardQuantity(card, amount) {
     setCollectionError(null);
@@ -182,16 +210,50 @@ export default function Cards() {
           <h2 className="cards-results-title">
             {hasSearched ? "Search results" : `Latest set: ${defaultSetName}`}
           </h2>
-          <div className="card-grid">
-            {cards.map((card) => (
-              <CardItem
-                key={card.id}
-                card={card}
-                quantity={cardQuantities[card.id] ?? 0}
-                onQuantityChange={(amount) => changeCardQuantity(card, amount)}
-              />
-            ))}
+          <div className="cards-filters" aria-label="Filter cards">
+            <label>
+              Set
+              <select value={setFilter} onChange={(event) => setSetFilter(event.target.value)}>
+                <option value="all">All sets</option>
+                {setOptions.map((setName) => <option key={setName} value={setName}>{setName}</option>)}
+              </select>
+            </label>
+            <label>
+              Rarity
+              <select value={rarityFilter} onChange={(event) => setRarityFilter(event.target.value)}>
+                <option value="all">All rarities</option>
+                {rarityOptions.map((rarity) => <option key={rarity} value={rarity}>{rarity}</option>)}
+              </select>
+            </label>
+            <label>
+              TCGplayer price
+              <select value={priceFilter} onChange={(event) => setPriceFilter(event.target.value)}>
+                <option value="all">Any price</option>
+                <option value="priced">Price available</option>
+                <option value="unpriced">No price listed</option>
+              </select>
+            </label>
+            <button type="button" onClick={clearFilters} disabled={!filtersAreActive}>
+              Clear filters
+            </button>
           </div>
+          <p className="cards-filter-count" aria-live="polite">
+            Showing {filteredCards.length} of {cards.length} cards
+          </p>
+          {filteredCards.length > 0 ? (
+            <div className="card-grid">
+              {filteredCards.map((card) => (
+                <CardItem
+                  key={card.id}
+                  card={card}
+                  quantity={cardQuantities[card.id] ?? 0}
+                  onQuantityChange={(amount) => changeCardQuantity(card, amount)}
+                />
+              ))}
+            </div>
+          ) : (
+            <p className="cards-empty">No cards match these filters. Clear a filter to see more cards.</p>
+          )}
         </>
       )}
     </section>
