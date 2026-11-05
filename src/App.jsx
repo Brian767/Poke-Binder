@@ -3,6 +3,7 @@ import "./App.css";
 import Home from "./pages/Home";
 import Cards from "./pages/Cards";
 import Collection from "./pages/Collection";
+import Binder from "./pages/Binder";
 import Layout from "./components/Layout";
 
 function App() {
@@ -13,6 +14,7 @@ function App() {
           <Route index element={<Home />} />
           <Route path="cards" element={<Cards />} />
           <Route path="collection" element={<Collection />} />
+          <Route path="binder" element={<Binder />} />
         </Route>
       </Routes>
     </BrowserRouter>
