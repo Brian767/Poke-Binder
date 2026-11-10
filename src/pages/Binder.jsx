@@ -145,95 +145,100 @@ export default function Binder() {
         <p>Organize your cards across binder pages. Each page has nine pockets.</p>
       </header>
 
-      <section className="binder-card-tray" aria-labelledby="binder-tray-title">
-        <div className="binder-tray-heading">
-          <div>
-            <h2 id="binder-tray-title">Your collection</h2>
-            <p>Drag cards into a pocket, or use Add. Scroll to see more.</p>
-          </div>
-          <Link to="/collection">Manage collection</Link>
-        </div>
-        {trayCards.length ? (
-          <div className="binder-tray-scroll">
-            <div className="binder-tray-grid">
-              {trayCards.map((card) => (
-                <article
-                  className="binder-tray-card"
-                  key={card.id}
-                  draggable
-                  onDragStart={(event) => handleDragStart(event, { type: "collection", cardId: card.id })}
-                  onDragEnd={() => setDragSource(null)}
-                  aria-label={`Drag ${card.name} into a binder pocket`}
-                >
-                  <img src={getCardImageUrl(card.image)} alt={`${card.name} card`} />
-                  <div className="binder-tray-card-info">
-                    <span title={card.name}>{card.name}</span>
-                    <button type="button" onClick={() => addCard(card)} disabled={!pages[currentPage].some((pocket) => !pocket)}>
-                      Add
-                    </button>
-                  </div>
-                </article>
-              ))}
+      <div className="binder-workspace">
+        <aside className="binder-card-tray" aria-labelledby="binder-tray-title">
+          <div className="binder-tray-heading">
+            <div>
+              <h2 id="binder-tray-title">Your collection</h2>
+              <p>Drag cards into a pocket, or use Add. Scroll to see more.</p>
             </div>
+            <Link to="/collection">Manage collection</Link>
           </div>
-        ) : (
-          <p className="binder-tray-empty">
-            {collection.length
-              ? "All available copies are already in your binder."
-              : <>Your collection is empty. Add cards on the <Link to="/cards">card search</Link> page.</>}
-          </p>
-        )}
-      </section>
+          {trayCards.length ? (
+            <div className="binder-tray-scroll">
+              <div className="binder-tray-grid">
+                {trayCards.map((card) => (
+                  <article
+                    className="binder-tray-card"
+                    key={card.id}
+                    draggable
+                    onDragStart={(event) => handleDragStart(event, { type: "collection", cardId: card.id })}
+                    onDragEnd={() => setDragSource(null)}
+                    aria-label={`Drag ${card.name} into a binder pocket`}
+                  >
+                    <img src={getCardImageUrl(card.image)} alt={`${card.name} card`} />
+                    <div className="binder-tray-card-info">
+                      <button
+                        type="button"
+                        onClick={() => addCard(card)}
+                        disabled={!pages[currentPage].some((pocket) => !pocket)}
+                        aria-label={`Add ${card.name} to binder`}
+                      >
+                        Add
+                      </button>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <p className="binder-tray-empty">
+              {collection.length
+                ? "All available copies are already in your binder."
+                : <>Your collection is empty. Add cards on the <Link to="/cards">card search</Link> page.</>}
+            </p>
+          )}
+        </aside>
 
-      <div className="binder-toolbar">
-        <div className="binder-page-navigation" aria-label="Binder page navigation">
-          <button
-            type="button"
-            onClick={() => setCurrentPage((page) => page - 1)}
-            disabled={currentPage === 0}
-            aria-label="Previous binder page"
-          >
-            Previous
-          </button>
-          <span aria-live="polite">Page {currentPage + 1} of {pages.length}</span>
-          <button
-            type="button"
-            onClick={() => setCurrentPage((page) => page + 1)}
-            disabled={currentPage === pages.length - 1}
-            aria-label="Next binder page"
-          >
-            Next
-          </button>
-        </div>
-        <button className="binder-add-page" type="button" onClick={addPage}>
-          + Add page
-        </button>
-      </div>
-
-      {storageError && <p className="binder-storage-error" role="alert">{storageError}</p>}
-
-      <div className="binder-grid" aria-label={`Binder page ${currentPage + 1}`}>
-        {pages[currentPage].map((card, index) => (
-          <div
-            className={`binder-pocket${card ? " binder-pocket-filled" : ""}${selectedPocket?.page === currentPage && selectedPocket?.pocket === index ? " binder-pocket-selected" : ""}`}
-            key={index}
-            aria-label={`Pocket ${index + 1}${card ? `: ${card.name}` : ", empty"}`}
-            onDragOver={(event) => event.preventDefault()}
-            onDrop={(event) => handleDrop(event, currentPage, index)}
-            draggable={Boolean(card)}
-            onDragStart={(event) => card && handleDragStart(event, { type: "pocket", page: currentPage, pocket: index })}
-            onDragEnd={() => setDragSource(null)}
-            onClick={() => handlePocketClick(currentPage, index)}
-          >
-            {card ? <img src={getCardImageUrl(card.image)} alt={`${card.name} card`} /> : <span>{index + 1}</span>}
-            {card && <button type="button" className="binder-pocket-remove" onClick={(event) => { event.stopPropagation(); updatePocket(currentPage, index, null); setSelectedPocket(null); }} aria-label={`Remove ${card.name} from binder`}>×</button>}
+        <section className="binder-display" aria-label="Binder page">
+          <div className="binder-toolbar">
+            <div className="binder-page-navigation" aria-label="Binder page navigation">
+              <button
+                type="button"
+                onClick={() => setCurrentPage((page) => page - 1)}
+                disabled={currentPage === 0}
+                aria-label="Previous binder page"
+              >
+                Previous
+              </button>
+              <span aria-live="polite">Page {currentPage + 1} of {pages.length}</span>
+              <button
+                type="button"
+                onClick={() => setCurrentPage((page) => page + 1)}
+                disabled={currentPage === pages.length - 1}
+                aria-label="Next binder page"
+              >
+                Next
+              </button>
+            </div>
+            <button className="binder-add-page" type="button" onClick={addPage}>
+              + Add page
+            </button>
           </div>
-        ))}
-      </div>
 
-      <p className="binder-hint">
-        Drag cards between pockets to rearrange them. On touch screens, tap a filled pocket and then another pocket to move or swap. Your binder pages are saved on this device.
-      </p>
+          {storageError && <p className="binder-storage-error" role="alert">{storageError}</p>}
+
+          <div className="binder-grid" aria-label={`Binder page ${currentPage + 1}`}>
+            {pages[currentPage].map((card, index) => (
+              <div
+                className={`binder-pocket${card ? " binder-pocket-filled" : ""}${selectedPocket?.page === currentPage && selectedPocket?.pocket === index ? " binder-pocket-selected" : ""}`}
+                key={index}
+                aria-label={`Pocket ${index + 1}${card ? `: ${card.name}` : ", empty"}`}
+                onDragOver={(event) => event.preventDefault()}
+                onDrop={(event) => handleDrop(event, currentPage, index)}
+                draggable={Boolean(card)}
+                onDragStart={(event) => card && handleDragStart(event, { type: "pocket", page: currentPage, pocket: index })}
+                onDragEnd={() => setDragSource(null)}
+                onClick={() => handlePocketClick(currentPage, index)}
+              >
+                {card ? <img src={getCardImageUrl(card.image)} alt={`${card.name} card`} /> : <span>{index + 1}</span>}
+                {card && <button type="button" className="binder-pocket-remove" onClick={(event) => { event.stopPropagation(); updatePocket(currentPage, index, null); setSelectedPocket(null); }} aria-label={`Remove ${card.name} from binder`}>×</button>}
+              </div>
+            ))}
+          </div>
+
+        </section>
+      </div>
     </section>
   );
 }
