@@ -64,6 +64,20 @@ export default function Binder() {
     if (savePages(nextPages)) setCurrentPage(nextPages.length - 1);
   }
 
+  function deleteCurrentPage() {
+    if (pages.length <= 1) return;
+    const pageNumber = currentPage + 1;
+    if (!window.confirm(`Delete binder page ${pageNumber}? Cards on it will return to your collection.`)) {
+      return;
+    }
+
+    const nextPages = pages.filter((_, index) => index !== currentPage);
+    if (savePages(nextPages)) {
+      setCurrentPage(Math.min(currentPage, nextPages.length - 1));
+      setSelectedPocket(null);
+    }
+  }
+
   function updatePocket(pageIndex, pocketIndex, card) {
     const nextPages = pages.map((page) => [...page]);
     nextPages[pageIndex][pocketIndex] = card;
@@ -211,9 +225,19 @@ export default function Binder() {
                 Next
               </button>
             </div>
-            <button className="binder-add-page" type="button" onClick={addPage}>
-              + Add page
-            </button>
+            <div className="binder-toolbar-actions">
+              <button className="binder-add-page" type="button" onClick={addPage}>
+                + Add page
+              </button>
+              <button
+                className="binder-delete-page"
+                type="button"
+                onClick={deleteCurrentPage}
+                disabled={pages.length <= 1}
+              >
+                Delete page
+              </button>
+            </div>
           </div>
 
           {storageError && <p className="binder-storage-error" role="alert">{storageError}</p>}
