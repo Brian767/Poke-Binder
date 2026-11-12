@@ -270,10 +270,6 @@
 }
 
 @media (max-width: 760px) {
-  .home-card-grid {
-    grid-template-columns: 1fr;
-  }
-
   .site-footer-content {
     grid-template-columns: 1fr;
   }
@@ -295,6 +291,7 @@
    -------------------------------------------------- */
 
 .home-hero {
+  box-sizing: border-box;
   margin-bottom: 1rem;
   padding: clamp(1.5rem, 4vw, 2.5rem);
   border: 1px solid rgb(172 236 161 / 35%);
@@ -305,8 +302,10 @@
 .home-hero-title {
   margin-bottom: 0.75rem;
   color: var(--color-font);
-  font-size: clamp(2rem, 5vw, 3rem);
+  font-size: clamp(1.8rem, 5vw, 3rem);
   font-weight: 700;
+  line-height: 1.15;
+  overflow-wrap: anywhere;
 }
 
 .home-hero-description {
@@ -317,13 +316,48 @@
 }
 
 .home-action {
-  display: inline-block;
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
   padding: 0.65rem 1rem;
   border-radius: 0.45rem;
   background: var(--color-accent);
   color: var(--color-main);
   font-weight: 700;
   text-decoration: none;
+}
+
+.home-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin: 1.25rem 0;
+  padding: 0.9rem 0;
+  border-top: 1px solid rgb(172 236 161 / 24%);
+  border-bottom: 1px solid rgb(172 236 161 / 24%);
+}
+
+.home-stat {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: 0.2rem;
+  text-align: center;
+}
+
+.home-stat + .home-stat {
+  border-left: 1px solid rgb(172 236 161 / 24%);
+}
+
+.home-stat strong {
+  color: var(--color-accent);
+  font-size: 1.5rem;
+}
+
+.home-stat span {
+  color: var(--color-light-font);
+  font-size: 0.85rem;
 }
 
 .home-card-grid {
@@ -334,6 +368,7 @@
 
 .home-feature-card {
   display: flex;
+  min-width: 0;
   min-height: 10rem;
   flex-direction: column;
   padding: 1.25rem;
@@ -352,6 +387,7 @@
 .home-feature-card p {
   color: var(--color-light-font);
   line-height: 1.5;
+  overflow-wrap: anywhere;
 }
 
 .home-feature-card span {
@@ -367,6 +403,91 @@
   outline-offset: 3px;
 }
 
+.home-recent {
+  margin-top: 1.75rem;
+}
+
+.home-recent-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.home-recent-heading h2 {
+  color: var(--color-font);
+  font-size: 1.25rem;
+}
+
+.home-recent-heading a,
+.home-recent-empty a {
+  color: var(--color-accent);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.home-recent-heading a:hover,
+.home-recent-empty a:hover {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+.home-recent-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.home-recent-card {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.65rem;
+  border: 1px solid rgb(172 236 161 / 20%);
+  border-radius: 0.65rem;
+  background: #202829;
+}
+
+.home-recent-card img {
+  display: block;
+  width: 3.5rem;
+  aspect-ratio: 2.5 / 3.5;
+  flex: 0 0 auto;
+  border-radius: 0.3rem;
+  object-fit: cover;
+}
+
+.home-recent-card h3 {
+  overflow: hidden;
+  color: var(--color-font);
+  font-size: 0.9rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.home-recent-card p {
+  overflow: hidden;
+  margin-top: 0.25rem;
+  color: var(--color-light-font);
+  font-size: 0.78rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.home-recent-empty {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem;
+  border: 1px solid rgb(172 236 161 / 20%);
+  border-radius: 0.65rem;
+  background: #202829;
+  color: var(--color-light-font);
+}
+
 /* --------------------------------------------------
    Page containers and headings
    -------------------------------------------------- */
@@ -377,6 +498,50 @@
   width: min(1200px, calc(100% - 2rem));
   margin: 0 auto;
   padding: 2rem 0;
+}
+
+@media (max-width: 760px) {
+  .home-card-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .home-recent-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 520px) {
+  .home-page {
+    padding: 1.25rem 0;
+  }
+
+  .home-hero {
+    padding: 1.15rem;
+  }
+
+  .home-hero-title {
+    font-size: clamp(1.7rem, 8vw, 2rem);
+  }
+
+  .home-action {
+    width: 100%;
+  }
+
+  .home-card-grid {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+
+  .home-recent-heading,
+  .home-recent-empty {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .home-feature-card {
+    min-height: 0;
+    padding: 1rem;
+  }
 }
 
 .cards-header {
