@@ -1,3 +1,6 @@
+/* --------------------------------------------------
+   Theme colors
+   -------------------------------------------------- */
 :root {
   --color-dark: #0a0908;
   --color-main: #373e40;
@@ -7,27 +10,28 @@
   --color-light-font: #d1ccdc;
 }
 
-html body {
+/* --------------------------------------------------
+   Global page defaults
+   -------------------------------------------------- */
+body {
   margin: 0;
   padding: 0;
   font-family: Arial, Helvetica, sans-serif;
-}
-
-body {
-  margin: 0;
   background-color: #0a0908;
-  color: #ffffff; /* Make sure your text color contrasts well */
+  color: #ffffff;
 }
 
-/* Move the pattern and mask here */
+/* --------------------------------------------------
+   Background pattern
+   -------------------------------------------------- */
 .bg-pattern {
   position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
   height: 100vh;
-  z-index: -1; /* Pushes the pattern behind all content */
-  pointer-events: none; /* Prevents it from blocking clicks */
+  z-index: -1;
+  pointer-events: none;
 
   background-color: #0a0908;
   opacity: 1;
@@ -48,6 +52,9 @@ body {
   mask-repeat: no-repeat;
   -webkit-mask-repeat: no-repeat;
 }
+/* --------------------------------------------------
+   Basic element reset
+   -------------------------------------------------- */
 div,
 h1,
 h2,

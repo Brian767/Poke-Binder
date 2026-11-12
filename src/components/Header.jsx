@@ -1,5 +1,6 @@
 import React from "react";
 import { NavLink, Link } from "react-router";
+import pikaLogo from "../assets/PIKA-LOGO.png";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = React.useState(false);
@@ -12,6 +13,7 @@ export default function Navbar() {
     <nav id="nav" aria-label="Main navigation">
       <div className="nav-padding">
         <Link className="nav-brand" to="/" aria-label="PokeCollection home">
+          <img className="nav-logo" src={pikaLogo} alt="" />
           PIKA BNDR
         </Link>
         <button
