@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { getCard } from "../api/pokemonTcgApi";
 import CardItem from "../components/CardItem";
-import { getTcgplayerMarketPrice } from "../components/CardItem";
+import { getTcgplayerMarketPrice } from "../utils/cardPricing";
 
 const STORAGE_KEY = "poke-collection:cards:v1";
 const LEGACY_STORAGE_KEY = "poke-binder:cards:v1";
@@ -51,20 +51,16 @@ export default function Collection() {
   const [cards, setCards] = useState(loadCollectionCards);
   const [error, setError] = useState(null);
   const [cardDetails, setCardDetails] = useState({});
-  const [isLoadingPrices, setIsLoadingPrices] = useState(false);
 
   useEffect(() => {
-    if (cards.length === 0) {
-      setCardDetails({});
-      setIsLoadingPrices(false);
-      return;
-    }
+    const cardsToLoad = cards.filter(
+      (card) => !Object.prototype.hasOwnProperty.call(cardDetails, card.id),
+    );
+    if (cardsToLoad.length === 0) return;
 
     let isCurrent = true;
-    setIsLoadingPrices(true);
-
     Promise.all(
-      cards.map(async (card) => {
+      cardsToLoad.map(async (card) => {
         try {
           return [card.id, await getCard(card.id)];
         } catch {
@@ -73,16 +69,15 @@ export default function Collection() {
       }),
     )
       .then((entries) => {
-        if (isCurrent) setCardDetails(Object.fromEntries(entries));
-      })
-      .finally(() => {
-        if (isCurrent) setIsLoadingPrices(false);
+        if (isCurrent) {
+          setCardDetails((details) => ({ ...details, ...Object.fromEntries(entries) }));
+        }
       });
 
     return () => {
       isCurrent = false;
     };
-  }, [cards]);
+  }, [cards, cardDetails]);
 
   function changeQuantity(cardId, amount) {
     const updatedCards = cards.flatMap((card) => {
@@ -101,6 +96,9 @@ export default function Collection() {
   }
 
   const totalCopies = cards.reduce((total, card) => total + (card.quantity ?? 1), 0);
+  const isLoadingPrices = cards.some(
+    (card) => !Object.prototype.hasOwnProperty.call(cardDetails, card.id),
+  );
   const totalValue = cards.reduce((total, card) => {
     const price = getTcgplayerMarketPrice(cardDetails[card.id]);
     return total + (price ? price.amount * (card.quantity ?? 1) : 0);

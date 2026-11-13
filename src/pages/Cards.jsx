@@ -1,6 +1,7 @@
 import { getCards, getLatestSetCards } from "../api/pokemonTcgApi";
 import { useCallback, useEffect, useRef, useState } from "react";
-import CardItem, { getTcgplayerMarketPrice } from "../components/CardItem";
+import CardItem from "../components/CardItem";
+import { getTcgplayerMarketPrice } from "../utils/cardPricing";
 
 const COLLECTION_STORAGE_KEY = "poke-collection:cards:v1";
 const LEGACY_STORAGE_KEY = "poke-binder:cards:v1";
